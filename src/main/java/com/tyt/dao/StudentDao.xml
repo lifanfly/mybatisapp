@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace和定义的Mapper接口对应，并实现其中的方法 -->
+<mapper namespace="com.tyt.dao.StudentDao">
+
+	<resultMap type="com.tyt.entity.Student" id="studentResultMap">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="tid" column="tid" />
+		<result property="phone" column="phone" />
+		<result property="age" column="age" />
+		<result property="address" column="address" />
+		<association property="teacher" resultMap="teacMap" />
+	</resultMap>
+
+	<resultMap id="teacMap" type="com.tyt.entity.Teacher">
+		<id property="id" column="t_id" />
+		<result property="name" column="t_name" />
+		<result property="email" column="t_email" />
+		<result property="phone" column="t_phone" />
+		<result property="age" column="t_age" />
+	</resultMap>
+
+	<select id="getStudentAndTeacher" resultMap="studentResultMap">
+		SELECT s.*,t.id t_id,t.name t_name,t.email t_email,
+			t.phone t_phone,t.age t_age
+		FROM STUDENT s,TEACHER t
+		WHERE s.tid=t.id		
+	</select>
+	<select id="getStudentByQuery" parameterType="student" resultType="student">
+		SELECT * from STUDENT st 
+		<if test="std.name!=null and std.name!=''">
+		  WHERE st.name=#{std.name}
+		</if>
+	</select>
+	
+	
+	<select id="getStudentByIdIn" resultType="student">  
+	     SELECT * from STUDENT WHERE id in  
+	     <where>
+	     	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
+	         '#{item}',''  
+	    </foreach> 
+	     </where>
+	      
+	</select> 
+
+	
+
+    <!-- id和mapper接口中的方法名对应，resultType使用mybatis.xml中的别名
+    <select id="createTable">
+        <![CDATA[
+          CREATE TABLE USERINFO(id int identity,name varchar(255),
+                                loginName varchar(255),password varchar(255)
+                                ,email varchar(255),phone varchar(255),sex int,age int)
+        ]]>
+   </select>
+
+    <select id="getUserInfo" resultType="userInfo">
+        <![CDATA[
+          SELECT * FROM USERINFO WHERE id=1
+        ]]>
+   </select>
+
+    <select id="getAllUserInfo" resultType="list"
+            resultMap="userMap.userResultMap">
+        <![CDATA[
+          SELECT * FROM USERINFO
+        ]]>
+   </select>
+-->
+    <!--  userMap.userResultMap是UserInfo-Map.xml中定义的resultmap 
+    <select id="getUserInfoById" parameterType="Integer"
+            resultType="com.tyt.entity.UserInfo" resultMap="userMap.userResultMap">
+         <![CDATA[
+          SELECT * FROM USERINFO WHERE id=#{id}
+        ]]>
+    </select>
+
+    <select id="getUserInfoByNames" parameterType="String"
+            resultMap="userMap.userResultMap">
+        <![CDATA[
+          SELECT * FROM USERINFO WHERE name = #{name}
+        ]]>
+  </select>
+ -->
+
+    <!-- 自动生成id策略
+     <insert id="addAccount" useGeneratedKeys="true"
+             keyProperty="account_id" parameterType="userInfo">
+     insert into account(account_id, status, username, password)
+     values(#{accountId}, #{status}, #{username}, #{password})
+   </insert>
+    -->
+    <!-- 根据selectKey语句生成主键 
+    <insert id="addUserInfo" parameterType="userInfo">
+       
+        <selectKey keyProperty="id" order="BEFORE"
+                   resultType="int">
+            select cast(random() * 10000 as Integer) a from #Tab
+        </selectKey>
+        
+        INSERT INTO USERINFO(name, loginname, password,email,phone,sex,age)
+        VALUES(#{name}, #{loginName}, #{password}, #{email}, #{phone}, #{sex}, #{age})
+    </insert>
+
+    <update id="editUserInfo" parameterType="userInfo">
+      UPDATE USERINFO SET
+          name = #{name},
+          email = #{email},
+          sex = #{sez}
+      where id = #{id}
+    </update>
+
+    <delete id="removeUserInfo" parameterType="int">
+      DELETE FROM USERINFO WHERE id=#{id}
+    </delete>
+    -->
+</mapper>
